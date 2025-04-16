@@ -1,0 +1,57 @@
+{
+    "хозяин": [
+        {
+            "auditorium": "Т109",
+            "subject": "Название пары",
+            "details": {
+                "current": {
+                    "people_count": "XX",
+                    "update": "XX",
+                    "module": "XX"
+                },
+                "team": {
+                    "teacher": "Максим Новиков",
+                    "students_count": "85",
+                    "student1": "тут будет список студентов..."
+                },
+                "image_url": "https://4kwallpapers.com/images/wallpapers/anime-girl-girly-pink-fantasy-1920x1080-5055.jpg"
+            }
+        },
+        {
+            "auditorium": "Т110",
+            "subject": "Название пары",
+            "details": {
+                "current": {
+                    "people_count": "XX",
+                    "update": "XX",
+                    "module": "XX"
+                },
+                "team": {
+                    "teacher": "Максим Новиков",
+                    "students_count": "85",
+                    "student1": "тут будет список студентов..."
+                },
+                "image_url": "https://images.wallpaperscraft.ru/image/single/anime_devushka_krylia_15561_1920x1080.jpg"
+            }
+        }
+    ],
+    "новиков": [
+        {
+            "auditorium": "Р109",
+            "subject": "Название пары",
+            "details": {
+                "current": {
+                    "people_count": "XX",
+                    "update": "XX",
+                    "module": "XX"
+                },
+                "team": {
+                    "teacher": "Максим Новиков",
+                    "students_count": "85",
+                    "student1": "тут будет список студентов..."
+                },
+                "image_url": "https://images.wallpaperscraft.ru/image/single/anime_devushka_volosy_16893_1920x1080.jpg"
+            }
+        }
+    ]
+}
