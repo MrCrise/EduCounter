@@ -80,6 +80,7 @@
         <h1>Вход</h1>
         <form method="post">
             {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
             <div class="form-group">
                 <label for="username">Логин</label>
                 <input type="text" id="username" name="username" required>

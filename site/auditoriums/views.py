@@ -3,12 +3,11 @@ import os
 from django.shortcuts import render, redirect
 from django.conf import settings
 
-
 def auditoriums_list(request):
-    if "username" not in request.session:
+    if not request.user.is_authenticated:
         return redirect("login:login")
 
-    username = request.session["username"]
+    username = request.user.username
 
     json_file_path = os.path.join(
         settings.BASE_DIR, 'data', 'auditoriums_data.json')
@@ -21,12 +20,11 @@ def auditoriums_list(request):
                   'auditoriums/auditoriums.html',
                   {'auditoriums_data': auditoriums_data})
 
-
 def auditorium_detail(request, auditorium_name):
-    if "username" not in request.session:
+    if not request.user.is_authenticated:
         return redirect("login:login")
 
-    username = request.session["username"]
+    username = request.user.username
 
     json_file_path = os.path.join(
         settings.BASE_DIR, 'data', 'auditoriums_data.json')
