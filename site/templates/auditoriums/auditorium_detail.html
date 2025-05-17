@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аудитория {{ auditorium.auditorium }}</title>
+    <style>
+        body {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background-color: #6294c9;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #fff;
+        }
+
+        .header .back-button {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #fff;
+            font-size: 1.5rem;
+        }
+
+        .header .back-button::before {
+            content: '←';
+            margin-right: 5px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            text-align: center;
+            flex: 1;
+        }
+
+        /* Main Content */
+        .content {
+            flex: 1;
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .auditorium-image {
+            flex: 2;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .auditorium-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Sidebar with Info */
+        .info-sidebar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-box {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+        }
+
+        .info-box h2 {
+            margin: 0 0 10px 0;
+            font-size: 2.5rem;
+            color: #333;
+        }
+
+        .info-box p {
+            margin: 5px 0;
+            font-size: 2rem;
+            color: #555;
+        }
+
+        .info-box b {
+            color: #222121ce;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="header">
+        <a href="{% url 'auditoriums:auditoriums_list' %}" class="back-button">Назад</a>
+        <h1>Аудитория {{ auditorium.auditorium }}</h1>
+        <div style="width: 60px;"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Auditorium Image -->
+        <div class="auditorium-image">
+            <img src="{{ auditorium.details.image_url }}">
+        </div>
+
+        <!-- Info Sidebar -->
+        <div class="info-sidebar">
+            <!-- Current Lesson -->
+            <div class="info-box">
+                <h2>Сейчас:</h2>
+                <p>Кол-во человек:<b> {{ auditorium.details.current.people_count|default:"XX" }}</b></p>
+                <p>Обновлено: <b> {{ auditorium.details.current.update|default:"XX" }}</b></p>
+                <p>Модуль: <b>{{ auditorium.details.current.module|default:"XX" }}</b></p>
+            </div>
+
+            <!-- Team -->
+            <div class="info-box">
+                <h2>Команда:</h2>
+                <p>Преподаватель: <b> {{ auditorium.details.team.teacher }} </b></p>
+                <p>Студенты: <b> {{ auditorium.details.team.students_count|default:"XX" }}</b></p>
+                <p> <b>{{ auditorium.details.team.student1 }}</b></p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

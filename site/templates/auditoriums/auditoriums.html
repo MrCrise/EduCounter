@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система учета посещаемости</title>
+    <style>
+        body {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: #6294c9;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar .profile {
+            text-align: center;
+            margin-top: 80px;
+            margin-bottom: 30px;
+        }
+
+        .sidebar .profile img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        .sidebar .profile h3 {
+            margin: 0;
+            font-size: 2rem;
+            color: #fff;
+        }
+
+        .sidebar .search-group {
+            width: 100%;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .sidebar .search-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1.5rem;
+        }
+
+        /* Logout Button */
+        .logout-button {
+            position: absolute;
+            bottom: 40px;
+            left: 20px;
+        }
+
+        .logout-button img {
+            width: 50px;
+            height: 60px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .logout-button img:hover {
+            opacity: 0.8;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            margin-left: 250px;
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-content h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        /* Auditorium List */
+        .auditorium-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: calc(100% - 40px);
+        }
+
+        .auditorium-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #dfdfdf85;
+            border-radius: 5px;
+            height: 70px;
+        }
+
+        .auditorium-item span {
+            flex: 1;
+            text-align: center;
+            font-size: 1.8rem;
+            color: #333;
+        }
+
+        .auditorium-item button {
+            padding: 12px 23px;
+            font-size: 1.5rem;
+            color: #fff;
+            background-color: #6294c9;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .auditorium-item button:hover {
+            background-color: #6294c9;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="profile">
+            <img src="https://i.pinimg.com/originals/62/f9/d4/62f9d4a6d5a7cb433a3ec693e7eca887.png">
+            <h3>{{ request.session.username|upper }}</h3>
+        </div>
+        <div class="search-group">
+            <input type="text" id="search" name="search" placeholder="Поиск аудитории">
+        </div>
+        <!-- Logout Button -->
+        <div class="logout-button">
+            <a href="{% url 'login:logout' %}">
+                <img src="https://i.ibb.co/7tjyNkKr/pngwing-com-2.png" alt="Logout">
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1> Все аудитории</h1>
+        <div class="auditorium-list" id="auditoriumList"></div>
+    </div>
+
+    <script>
+        const auditoriumsData = {{ auditoriums_data| safe }};
+        const baseDetailUrl = "{% url 'auditoriums:auditorium_detail' auditorium_name='placeholder' %}";
+
+        function renderAuditoriumList(data) {
+            const auditoriumList = document.getElementById('auditoriumList');
+            auditoriumList.innerHTML = '';
+
+            data.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'auditorium-item';
+                const encodedAuditorium = encodeURIComponent(item.auditorium);
+                const detailUrl = baseDetailUrl.replace('placeholder', encodedAuditorium);
+                div.innerHTML = `
+                    <span>${item.auditorium}</span>
+                    <span>${item.subject}</span>
+                    <a href="${detailUrl}">
+                        <button>СМОТРЕТЬ</button>
+                    </a>
+                `;
+                auditoriumList.appendChild(div);
+            });
+        }
+
+        document.getElementById('search').addEventListener('input', function (e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredData = auditoriumsData.filter(item =>
+                item.auditorium.toLowerCase().includes(searchTerm) ||
+                item.subject.toLowerCase().includes(searchTerm)
+            );
+            renderAuditoriumList(filteredData);
+        });
+
+        window.onload = () => renderAuditoriumList(auditoriumsData);
+    </script>
+</body>
+
+</html>
