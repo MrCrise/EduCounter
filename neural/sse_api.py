@@ -65,6 +65,7 @@ async def sse_count(session_id: str):
     Server-sent events realisation.
     Return streaming response to client.
     '''
+
     return StreamingResponse(
         event_generator(session_id),
         media_type='text/event-stream',

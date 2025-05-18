@@ -25,6 +25,6 @@ async def frame_generator(video_url: str) -> AsyncGenerator:
             if not retval:
                 break
             yield frame
-            await asyncio.sleep(0.01)  # Avoiding tight loop.
+            await asyncio.sleep(0.5)  # Avoiding tight loop.
     finally:
         await loop.run_in_executor(None, capture.release)

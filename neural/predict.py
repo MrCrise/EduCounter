@@ -1,30 +1,29 @@
-import torch
 import cv2
 import numpy as np
-from neural_config import MODEL_PATH
+from ultralytics import YOLO
+from neural_config import *
 
 
-model = torch.hub.load(
-    source='local',
-    repo_or_dir=MODEL_PATH,
-    )
+model = YOLO(MODEL_PATH)
 
 
 def model_predict(frame: any) -> int:
     '''
     Runs YOLO inference on a given frame and returns count of people on it.
-    Assume 'person' class index is 0.
-
-    TODO: Implement support of YOLOv11 model, current
-          realisation only support old YOLO models.
     '''
 
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    prediction = model(rgb_frame)
+    prediction = model.predict(
+        source=rgb_frame,
+        device=MODEL_DEVICE,
+        classes=MODEL_CLASSES,
+        save=MODEL_SAVE,
+        project=MODEL_PROJECT,
+        imgsz=MODEL_IMGSZ,
+        )
 
-    detections: np.ndarray = prediction.xyxy[0].cpu().numpy()
+    detections: list = prediction[0]
 
-    # Select every detection where class id is 0 and find count.
-    people_count: int = int((detections[:, 5] == 0).sum())
+    people_count: int = len(detections)
 
     return people_count

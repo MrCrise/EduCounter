@@ -84,7 +84,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'educounter',
         'USER': 'educounter_admin',
-        'PASSWORD': 'password',
+        'PASSWORD': '1234',
         'HOST': 'localhost',
         'PORT': '',
     }
@@ -133,7 +133,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'login.User' 
+AUTH_USER_MODEL = 'login.User'
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = 'auditoriums:auditoriums_list'
