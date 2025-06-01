@@ -1,6 +1,8 @@
+import cv2
 import json
 import os
 import requests
+from django.http import StreamingHttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.conf import settings
 from data.auditoriums_urls import AUDITORIUM_URLS

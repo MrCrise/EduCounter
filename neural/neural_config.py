@@ -1,4 +1,4 @@
-MODEL_PATH: str = r'path'
+MODEL_PATH: str = r'N:\PythonProjects\CV models comparison\yolo\output_yolo\train\weights\best.pt'
 MODEL_DEVICE: str = 'cuda:0'
 MODEL_CLASSES: list[int] = [0]  # 0 for person.
 MODEL_SAVE: bool = False
