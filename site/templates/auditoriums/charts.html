@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Графики посещаемости</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background-color: #6294c9;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #fff;
+        }
+
+        .header .back-button {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #fff;
+            font-size: 1.5rem;
+        }
+
+        .header .back-button::before {
+            content: '←';
+            margin-right: 5px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            text-align: center;
+            flex: 1;
+        }
+
+        /* Main Content */
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        /* Controls Box */
+        .controls-box {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .controls-box label {
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .controls-box select {
+            padding: 10px;
+            font-size: 1.3rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            min-width: 200px;
+        }
+
+        /* Daily Charts Container */
+        .daily-charts {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* Chart Box */
+        .chart-box {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .chart-box h2 {
+            margin: 0 0 20px 0;
+            font-size: 1.8rem;
+            color: #333;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #6294c9;
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        /* Stats Box */
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            margin: 0;
+            font-size: 1.4rem;
+            color: #666;
+        }
+
+        .stat-item p {
+            margin: 5px 0;
+            font-size: 1.8rem;
+            color: #6294c9;
+            font-weight: bold;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.5rem;
+            color: #666;
+            background: #f9f9f9;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="header">
+        <a href="{% url 'auditoriums:auditoriums_list' %}" class="back-button">Назад</a>
+        <h1>Графики посещаемости</h1>
+        <div style="width: 60px;"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Controls -->
+        <div class="controls-box">
+            <label for="audSelect">Выберите аудиторию:</label>
+            <select id="audSelect">
+                {% for aud in auditoriums %}
+                    <option value="{{ aud.id }}">{{ aud.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Daily Charts will be inserted here -->
+        <div class="daily-charts" id="dailyCharts"></div>
+    </div>
+
+    <script>
+        function groupDataByDays(data) {
+            const days = {};
+            
+            data.labels.forEach((label, index) => {
+                const date = label.split(' ')[0]; // Get date part only
+                if (!days[date]) {
+                    days[date] = {
+                        labels: [],
+                        values: []
+                    };
+                }
+                days[date].labels.push(label.split(' ')[1]); // Time part only
+                days[date].values.push(data.values[index]);
+            });
+
+            return days;
+        }
+
+        function createDailyChart(date, data, container) {
+            const chartBox = document.createElement('div');
+            chartBox.className = 'chart-box';
+            
+            // Format date for display
+            const displayDate = new Date(date).toLocaleDateString('ru-RU', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            chartBox.innerHTML = `
+                <h2>${displayDate}</h2>
+                <div class="chart-container">
+                    <canvas></canvas>
+                </div>
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <h3>Среднее</h3>
+                        <p>${(data.values.reduce((a, b) => a + b, 0) / data.values.length).toFixed(1)}</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>Максимум</h3>
+                        <p>${Math.max(...data.values)}</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>Записей</h3>
+                        <p>${data.values.length}</p>
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(chartBox);
+
+            const ctx = chartBox.querySelector('canvas').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Количество людей',
+                        data: data.values,
+                        borderColor: '#6294c9',
+                        backgroundColor: 'rgba(98, 148, 201, 0.1)',
+                        tension: 0.3,
+                        fill: true,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function loadChartData(auditoriumId) {
+            const container = document.getElementById('dailyCharts');
+            container.innerHTML = '<div class="chart-box"><p class="no-data">Загрузка данных...</p></div>';
+
+            fetch(`/auditoriums/charts/${auditoriumId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    container.innerHTML = '';
+
+                    if (!data.labels.length) {
+                        container.innerHTML = '<div class="chart-box"><p class="no-data">Нет данных для этой аудитории</p></div>';
+                        return;
+                    }
+
+                    const dailyData = groupDataByDays(data);
+                    
+                    // Sort days in reverse chronological order
+                    Object.keys(dailyData)
+                        .sort()
+                        .reverse()
+                        .forEach(date => {
+                            createDailyChart(date, dailyData[date], container);
+                        });
+                })
+                .catch(error => {
+                    console.error("Ошибка загрузки данных:", error);
+                    container.innerHTML = '<div class="chart-box"><p class="no-data">Ошибка при загрузке данных</p></div>';
+                });
+        }
+
+        document.getElementById('audSelect').addEventListener('change', function() {
+            loadChartData(this.value);
+        });
+
+        // Initial load
+        window.onload = function() {
+            const select = document.getElementById('audSelect');
+            if (select && select.value) {
+                loadChartData(select.value);
+            }
+        };
+    </script>
+</body>
+
+</html>

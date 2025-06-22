@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from sessions import create_session, get_video_url
 from framegen import frame_generator
 from predict import model_predict
+import requests
 
 
 router = APIRouter()
@@ -58,6 +59,14 @@ async def event_generator(session_id: str) -> AsyncGenerator:
         )
         count_dict = {'count': people_count}
         yield f'data: {json.dumps(count_dict)}\n\n'
+        try:
+            requests.post('http://localhost:8000/api/save-attendance/', json={
+                'session_id': session_id,
+                'auditorium_id': video_url,  # или если есть map session_id → aud
+                'people_count': people_count
+            })
+        except Exception as e:
+            print("Не удалось отправить данные на Django:", e)
 
 
 @router.get('/sse/counter/{session_id}')

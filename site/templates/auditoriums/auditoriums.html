@@ -147,11 +147,20 @@
     <div class="sidebar">
         <div class="profile">
             <img src="https://i.pinimg.com/originals/62/f9/d4/62f9d4a6d5a7cb433a3ec693e7eca887.png">
-            <h3>{{ request.session.username|upper }}</h3>
+            <h3>{{ request.user.username|upper }}</h3>
         </div>
         <div class="search-group">
             <input type="text" id="search" name="search" placeholder="Поиск аудитории">
         </div>
+        
+        <div style="margin-top: 30px;">
+            <a href="{% url 'auditoriums:charts' %}">
+                <button style="width: 100%; padding: 12px; font-size: 1.2rem; background-color: #4477aa; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    Графики
+                </button>
+            </a>
+        </div>
+
         <!-- Logout Button -->
         <div class="logout-button">
             <a href="{% url 'login:logout' %}">
