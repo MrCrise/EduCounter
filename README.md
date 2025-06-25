@@ -16,6 +16,7 @@
    - [На сервере (Ubuntu)](#на-сервере-ubuntu)
 4. [Настройка](#floppy_disk-настройка-сервиса)
 5. [Структура](#open_file_folder-структура-проекта)
+6. [Частые ошибки](#question-часто-встречающиеся-проблемы)
 
 
 ---
@@ -143,7 +144,7 @@ EduCounter — это сервис для автоматического под�
 	```
 
 6. **Создание Systemd сервисов**
-	- FastAPI (/etc/systemd/system/educounter-api.service)
+	- FastAPI (`/etc/systemd/system/educounter-api.service`)
 	```ini
 	[Unit]
 	Description=EduCounter FastAPI Service
@@ -161,7 +162,7 @@ EduCounter — это сервис для автоматического под�
 	WantedBy=multi-user.target
 	```
 	
-	- Django + Gunicorn (/etc/systemd/system/educounter-web.service)
+	- Django + Gunicorn (`/etc/systemd/system/educounter-web.service`)
 	```ini
 	[Unit]
 	Description=EduCounter Django Service
@@ -190,7 +191,7 @@ EduCounter — это сервис для автоматического под�
 	```
 
 8. **Создание обратного прокси Nginx**
-	- (/etc/nginx/sites-available/educounter)
+	- (`/etc/nginx/sites-available/educounter`)
 	```nginx
 	server {
 		listen 80;
@@ -241,11 +242,11 @@ EduCounter — это сервис для автоматического под�
 ## :floppy_disk: Настройка сервиса
 
 ### Нейросеть
-- /neural/neural_config.py
+- `/neural/neural_config.py`
 
 ### Пути к видео/стримам для обработки
 Поддерживает как загрузку локального видео, так и стриминг по прямой ссылке (RTSP).
-- /site/data/auditoriums_urls.py
+- `/site/data/auditoriums_urls.py`
 
 ---
 
@@ -302,5 +303,12 @@ EduCounter/
 ├─ README.md
 ├─ requirements.txt
 ```
+
+---
+
+## :question: Часто встречающиеся проблемы
+- **Permission denied при миграции**: назначьте пользователя PostgreSQL владельцем схемы.
+- **libGL.so.1 not found**: `bash sudo apt install libgl1-mesa-dev libglib2.0-0`
+- **Вечный SSE pending**: убедитесь, что в nginx `proxy_buffering off` и `chunked_transfer_encoding off`.
 
 ---
